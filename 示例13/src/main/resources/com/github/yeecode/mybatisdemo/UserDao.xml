@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.yeecode.mybatisdemo.dao.UserDao">
+    <cache type="PERPETUAL"
+           eviction="FIFO"
+           flushInterval="60000"
+           size="512"
+           readOnly="true"
+           blocking="true">
+        <property name="timeout" value="20"/> <!--可以加入property节点，将用来直接修改Cache对象的属性-->
+    </cache>
+
+    <parameterMap id="userParam01" type="User">
+        <parameter property="name" javaType="String"/>
+        <parameter property="schoolName" javaType="String"/>
+    </parameterMap>
+
+    <resultMap id="userMapFull" type="User">
+        <result property="id" column="id"/>
+        <result property="schoolName" column="id"/>
+    </resultMap>
+
+    <resultMap id="userMapByConstructor" type="User">
+        <constructor>
+            <idArg column="id" javaType="Integer"/>
+            <arg column="name" javaType="String"/>
+            <arg column="sex" javaType="Integer"/>
+            <arg column="schoolName" javaType="String"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="girlUserMap" type="Girl" extends="userMap">
+        <result property="email" column="email"/>
+    </resultMap>
+
+    <resultMap id="userMap" type="User" autoMapping="false">
+        <id property="id" column="id" javaType="Integer" jdbcType="INTEGER"
+            typeHandler="org.apache.ibatis.type.IntegerTypeHandler"/>
+        <result property="name" column="name"/>
+        <discriminator javaType="int" column="sex">
+            <case value="0" resultMap="boyUserMap"/>
+            <case value="1" resultMap="girlUserMap"/>
+        </discriminator>
+    </resultMap>
+
+    <resultMap id="boyUserMap" type="Boy" extends="userMap">
+        <result property="age" column="age"/>
+    </resultMap>
+
+    <select id="selectUser_A" resultMap="userMapByConstructor">
+      SELECT * FROM `user` WHERE `id` = #{id}
+    </select>
+
+    <select id="selectUser_B" resultMap="userMap">
+      select * FROM `user` WHERE `id` = #{id}
+    </select>
+
+    <select id="selectUsers" resultMap="userMapFull">
+        SELECT *
+        FROM `user`
+        WHERE `id` IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <sql id="bySchool">
+        AND `schoolName` = #{schoolName}
+    </sql>
+
+    <select id="selectUserByNameAndSchoolName" parameterMap="userParam01" resultType="User">
+        SELECT * FROM `user` WHERE `name` = #{name}
+        <include refid="bySchool"/>
+    </select>
+
+    <select id="selectUsersByNameOrSchoolName" parameterMap="userParam01" resultType="User">
+        SELECT * FROM `user`
+        <where>
+            <if test="name != null">
+                `name` = #{name}
+            </if>
+            <if test="schoolName != null">
+                AND `schoolName` = #{schoolName}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByAge" resultMap="userMap" databaseId="mysql">
+    SELECT * FROM `user` WHERE `age` = #{age} TOP 5
+</select>
+
+    <select id="selectByAge" resultMap="userMap" databaseId="sqlserver">
+    SELECT * FROM `user` WHERE `age` = #{age} LIMIT 5
+</select>
+</mapper>

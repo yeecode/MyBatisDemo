@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.yeecode.mybatisdemo.dao.UserDao">
+    <insert id="addUser_A" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `user`
+        (`name`,`email`,`age`,`sex`,`schoolName`)
+        VALUES
+        (#{name},#{email},#{age},#{sex},#{schoolName})
+    </insert>
+
+    <insert id="addUser_B" parameterType="User">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO `user`
+        (`name`,`email`,`age`,`sex`,`schoolName`)
+        VALUES
+        (#{name},#{email},#{age},#{sex},#{schoolName})
+    </insert>
+
+    <insert id="addUser_C" parameterType="User">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="BEFORE">
+            SELECT CEILING(RAND()*900+100)
+--             SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO `user`
+        (`name`,`email`,`age`,`sex`,`schoolName`)
+        VALUES
+        (#{name},#{email},#{age},#{sex},#{schoolName})
+    </insert>
+
+    <insert id="addUser_D" parameterType="User">
+        INSERT INTO `user`
+        (`name`,`email`,`age`,`sex`,`schoolName`)
+        VALUES
+        (#{name},#{email},#{age},#{sex},#{schoolName})
+    </insert>
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.yeecode.mybatisdemo.dao.UserMapper">
+    <!--直接字符串拼接，必须自己加引号，否则会拼接为下面的语句然后失败：：SELECT * FROM `user` WHERE schoolName = Sunny School-->
+    <select id="queryUserBySchoolName_A" resultType="com.github.yeecode.mybatisdemo.model.User" statementType="STATEMENT">
+      SELECT * FROM `user` WHERE schoolName = "${schoolName}"
+    </select>
+
+    <!--会把变量转为？后进行填入，不能有引号-->
+    <select id="queryUserBySchoolName_B" resultType="com.github.yeecode.mybatisdemo.model.User" statementType="PREPARED">
+      SELECT * FROM `user` WHERE schoolName = #{schoolName}
+    </select>
+
+    <!--使用前需要先到数据库创建以下存储过程：-->
+    <!--CREATE PROCEDURE `yeecode`(IN `ageMinLimit` int,IN `ageMaxLimit` int,OUT `count` int, OUT `maxAge` int)-->
+    <!--BEGIN-->
+    <!--SELECT COUNT(*),MAX(age) INTO count,maxAge FROM user WHERE age >= ageMinLimit AND age <= ageMaxLimit;-->
+    <!--END $$-->
+    <select id="runCall" statementType="CALLABLE">
+      CALL yeecode(
+      ${ageMinLimit},
+      #{ageMaxLimit,mode=IN,jdbcType=NUMERIC},
+      #{count,mode=OUT,jdbcType=NUMERIC},
+      #{maxAge,mode=OUT,jdbcType=NUMERIC}
+      );
+    </select>
+</mapper>
