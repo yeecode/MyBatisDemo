@@ -1,0 +1,1 @@
+UPDATE user SET email = 'yeecode@abc.com' WHERE name = '易哥';

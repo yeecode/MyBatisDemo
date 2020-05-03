@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.yeecode.mybatisdemo.dao.UserDao">
+    <resultMap id="associationUserMap" type="User">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="schoolName" column="schoolName"/>
+        <association property="taskList" javaType="ArrayList"
+                     select="com.github.yeecode.mybatisdemo.dao.UserDao.selectTask" column="id"/>
+    </resultMap>
+
+    <resultMap id="nestedUserMap" type="User">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="schoolName" column="schoolName"/>
+        <association property="taskList"  resultMap="taskMap"/>
+    </resultMap>
+
+    <resultMap id="taskMap" type="Task">
+        <result property="id" column="id" />
+        <result property="userId" column="userId" />
+        <result property="taskName" column="taskName" />
+    </resultMap>
+
+    <select id="nestedQuery" resultMap="nestedUserMap">
+      SELECT * FROM `user` JOIN `task` ON `user`.`id` = `task`.`userId` WHERE `sex` = #{sex}
+    </select>
+
+    <select id="lazyLoadQuery" resultMap="associationUserMap">
+      SELECT * FROM `user` WHERE `sex` = #{sex}
+    </select>
+
+    <select id="selectTask" resultType="Task">
+      SELECT * FROM `task` WHERE `userId` = #{id}
+    </select>
+
+</mapper>

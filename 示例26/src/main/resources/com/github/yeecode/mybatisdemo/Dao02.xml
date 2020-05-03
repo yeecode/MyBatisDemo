@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--使用前需要先到数据库创建以下存储过程：-->
+<!--DELIMITER $$-->
+<!--CREATE-->
+<!--PROCEDURE `multiResults`()-->
+<!--BEGIN-->
+<!--SELECT * FROM `user` WHERE `sex` = 0;-->
+<!--SELECT * FROM `task` WHERE `id` >= 1;-->
+<!--END$$-->
+<!--DELIMITER ;-->
+
+<mapper namespace="com.github.yeecode.mybatisdemo.dao.Dao02">
+
+    <resultMap id="userMap" type="User" autoMapping="true">
+        <collection property="taskList" resultSet="taskRecord" resultMap="taskMap" />
+    </resultMap>
+
+    <resultMap id="taskMap" type="Task">
+        <result property="id" column="id" />
+        <result property="userId" column="userId" />
+        <result property="taskName" column="taskName" />
+    </resultMap>
+
+    <!--将两个结果整合为一个userMap结果返回-->
+    <select id="query" resultMap="userMap" resultSets="userRecord,taskRecord" statementType="CALLABLE">
+      CALL multiResults()
+    </select>
+
+</mapper>

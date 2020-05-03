@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties>
+        <property name="jdbc.username" value="{username}"/>
+        <property name="jdbc.password" value="{password}"/>
+    </properties>
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <setting name="aggressiveLazyLoading" value="true"/>
+        <setting name="multipleResultSetsEnabled" value="true"/>
+        <setting name="useColumnLabel" value="true"/>
+        <setting name="useGeneratedKeys" value="true"/>
+        <setting name="autoMappingBehavior" value="PARTIAL"/>
+        <setting name="defaultExecutorType" value="SIMPLE"/>
+        <setting name="defaultStatementTimeout" value="25000"/>
+    </settings>
+    <typeAliases>
+        <typeAlias type="com.github.yeecode.mybatisdemo.model.User" alias="user"/>
+        <package name="com.github.yeecode.mybatisdemo.model"/>
+    </typeAliases>
+    <typeHandlers>
+        <typeHandler handler="com.github.yeecode.mybatisdemo.TestTypeHandler"/>
+    </typeHandlers>
+    <objectFactory type="com.github.yeecode.mybatisdemo.TestObjectFactory">
+        <property name=""  value=""/>
+    </objectFactory>
+    <objectWrapperFactory type="com.github.yeecode.mybatisdemo.TestObjectWrapperFactory"/>
+    <reflectorFactory type="com.github.yeecode.mybatisdemo.TestReflectFactory" />
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageHelper">
+            <property name="dialect" value="mysql"/>
+        </plugin>
+    </plugins>
+    <environments default="dev">
+        <environment id="dev">
+            <transactionManager type="JDBC"/>
+            <dataSource type="UNPOOLED">
+                <!--数据库驱动-->
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <!--数据源地址-->
+                <property name="url" value="jdbc:mysql://127.0.0.1:3306/yeecode"/>
+                <!--数据源用户名-->
+                <property name="username" value="yeecode"/>
+                <!--数据源密码-->
+                <property name="password" value="yeecode_passward"/>
+                <!--是否自动提交-->
+                <property name="autoCommit" value="true" />
+                <!--默认的事务隔离级别-->
+                <property name="defaultTransactionlsoltionLevel" value="1"/>
+                <!--默认最长等待时间-->
+                <property name="defaultNetworkTimeout" value="2000"/>
+                <!-- 省略了一些其他属性 -->
+            </dataSource>
+        </environment>
+        <environment id="sit">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://127.0.0.1:3306/yeecode"/>
+                <property name="username" value="yeecode"/>
+                <property name="password" value="yeecode_passward"/>
+                <property name="defaultTransactionlsoltionLevel" value="1"/>
+                <!-- 最大活动连接数 -->
+                <property name="poolMaximumActiveConnections" value="15" />
+                <!-- 最大空闲连接数 -->
+                <property name="poolMaximumIdleConnections" value="5" />
+                <!-- 省略了一些其他属性 -->
+            </dataSource>
+        </environment>
+        <environment id="uat">
+            <transactionManager type="JDBC"/>
+            <dataSource type="JNDI" >
+                <!--起始环境信息-->
+                <property name="initial_context" value="java:/comp/env"/>
+                <!--数据源JNDI名称-->
+                <property name="data_source" value="java:comp/env/jndi/mybatis" />
+                <!--以"env."开头的其他环境配置信息-->
+                <property name="env.encoding" value="UTF8" />
+            </dataSource>
+        </environment>
+    </environments>
+    <databaseIdProvider type="DB_VENDOR">
+        <property name="MySQL" value="mysql" />
+        <property name="SQL Server" value="sqlserver" />
+    </databaseIdProvider>
+    <mappers>
+        <mapper resource="com/github/yeecode/mybatisdemo/UserDao.xml"/>
+        <package name="com.github.yeecode.mybatisdemo"/>
+    </mappers>
+</configuration>

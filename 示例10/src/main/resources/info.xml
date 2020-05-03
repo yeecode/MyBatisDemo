@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<members>
+    <user type="student">
+        <id>1</id>
+        <name>易哥</name>
+        <shcool>Sunny School</shcool>
+    </user>
+    <user type="student">
+        <id>2</id>
+        <name>莉莉</name>
+        <shcool>Garden School</shcool>
+    </user>
+</members>

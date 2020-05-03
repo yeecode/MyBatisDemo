@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.yeecode.mybatisdemo.UserDao">
+    <cache-ref namespace="com.github.yeecode.mybatisdemo"/>
+    <cache eviction="FIFO" flushInterval="60000"/>
+
+    <parameterMap id="userParam01" type="User">
+        <parameter property="name" javaType="String"/>
+        <parameter property="schoolName" javaType="String"/>
+    </parameterMap>
+
+    <resultMap id="detailedMap" type="user">
+        <constructor>
+            <idArg column="id" javaType="int"/>
+            <arg column="name" javaType="string"/>
+        </constructor>
+        <result property="sex" column="sex"/>
+        <association property="bag" javaType="Bag" select="queryUserBag">
+            <id property="name" column="name"/>
+            <result property="weight" column="weight"/>
+        </association>
+        <collection property="books" ofType="Book">
+            <id property="name" column="name"/>
+            <result property="price" column="price"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="userMapFull" type="User">
+        <result property="id" column="id"/>
+        <result property="schoolName" column="id"/>
+    </resultMap>
+
+    <resultMap id="userMap" type="User" autoMapping="false">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <discriminator javaType="int" column="sex">
+            <case value="0" resultMap="boyUserMap"/>
+            <case value="1" resultMap="girlUserMap"/>
+        </discriminator>
+    </resultMap>
+
+    <resultMap id="girlUserMap" type="Girl" extends="userMap">
+        <result property="email" column="email"/>
+    </resultMap>
+
+    <resultMap id="boyUserMap" type="Boy" extends="userMap">
+        <result property="age" column="age"/>
+    </resultMap>
+
+    <sql id="byId">
+        WHERE `id` = #{id};
+    </sql>
+
+    <select id="selectByAge" resultMap="userMap" databaseId="mysql">
+        SELECT * FROM `user` WHERE `age` = #{age} TOP 5
+    </select>
+
+    <select id="selectByAge" resultMap="userMap" databaseId="sqlserver">
+        SELECT * FROM `user` WHERE `age` = #{age} LIMIT 5
+    </select>
+
+    <select id="selectUsers" resultMap="userMapFull">
+        SELECT *
+        FROM `user`
+        WHERE `id` IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM `user`
+        <include refid="byId"/>
+    </delete>
+
+    <insert id="add" useGeneratedKeys="true">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="BEFORE">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO `user` VALUES (#{id},#{name},#{email},#{age},#{sex},#{schoolName});
+    </insert>
+
+    <update id="editEmailById">
+        UPDATE `user`
+        SET `email` = #{email}
+        <include refid="byId"/>
+    </update>
+</mapper>
