@@ -1,3 +1,7 @@
-初始化项目
+# [MyBatisDemo](https://github.com/yeecode/MyBatisDemo)
 
-用于整理MyBatis相关的Demo
+该项目是《通用源码阅读指导书——MyBatis源码详解》书籍的配套示例。
+
+---
+
+内容正在完善中……
