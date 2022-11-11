@@ -87,11 +87,11 @@
         </where>
     </select>
 
-    <select id="selectByAge" resultMap="userMap" databaseId="mysql">
+    <select id="selectByAge" resultMap="userMap" databaseId="sqlserver">
     SELECT * FROM `user` WHERE `age` = #{age} TOP 5
 </select>
 
-    <select id="selectByAge" resultMap="userMap" databaseId="sqlserver">
+    <select id="selectByAge" resultMap="userMap" databaseId="mysql">
     SELECT * FROM `user` WHERE `age` = #{age} LIMIT 5
 </select>
 </mapper>
